@@ -22,6 +22,6 @@
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY *.sln .
-COPY *.csproj ./
+COPY API2PSMaster.sln .
+COPY /API2PSMaster.csproj ./
 RUN dotnet restore
