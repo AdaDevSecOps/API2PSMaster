@@ -20,7 +20,7 @@
 # ENTRYPOINT ["dotnet", "API2PSMaster.dll"]
 
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0.9-nanoserver-ltsc2022 AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0-windowservercore-ltsc2019 AS build
 WORKDIR /source
 
 # copy csproj and restore as distinct layers
