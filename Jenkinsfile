@@ -33,22 +33,25 @@ pipeline
             }
         }
 
-        stage('Docker Compose')
+        stage('Docker Build')
         {
             steps
             {
                 echo "========Docker Building========"
-                bat "docker-compose up -d --build"
+                script
+                {
+                    dockerImage = docker.build("API2PSMaster:5.18003.1.1", "./API2PSMaster/")
+                }
             }
             post
             {
                 success
                 {
-                    echo "========Docker Compose successfully========"
+                    echo "========Docker Building successfully========"
                 }
                 failure
                 {
-                    echo "========Docker Compose failed========"
+                    echo "========Docker Building failed========"
                 }
             }
         }
