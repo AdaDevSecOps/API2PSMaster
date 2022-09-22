@@ -40,7 +40,7 @@ pipeline
                 echo "========Docker Building========"
                 script
                 {
-                    dockerImage = docker.build("API2PSMaster:5.18003.1.1", "./API2PSMaster/")
+                    dockerImage = docker.build("api2psmaster:5.18003.1.1", "./API2PSMaster/")
                 }
             }
             post
