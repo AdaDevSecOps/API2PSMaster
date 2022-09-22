@@ -6,10 +6,10 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["API2PSMaster/API2PSMaster.csproj", "API2PSMaster/"]
-RUN dotnet restore "./API2PSMaster/API2PSMaster.csproj"
+COPY ["api2psmaster/api2psmaster.csproj", "api2psmaster/"]
+RUN dotnet restore "./api2psmaster/API2PSMaster.csproj"
 COPY . .
-WORKDIR "/src/API2PSMaster"
+WORKDIR "/src/api2psmaster"
 RUN dotnet build "API2PSMaster.csproj" -c Release -o /app/build
 
 FROM build AS publish
