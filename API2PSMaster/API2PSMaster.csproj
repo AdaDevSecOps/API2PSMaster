@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup Label="Globals">
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <AssemblyVersion>5.20002.0.1109</AssemblyVersion>
+    <FileVersion>5.20002.0.1109</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Controllers\Backup\**" />
+    <Content Remove="Controllers\Backup\**" />
+    <EmbeddedResource Remove="Controllers\Backup\**" />
+    <None Remove="Controllers\Backup\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Controllers\cDocPdtTransfersController.cs" />
+    <Compile Remove="Models\WebService\Request\Document\cTCNTPdtTnf.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.90" />
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.6" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.14" />
+    <PackageReference Include="StackExchange.Redis" Version="2.2.4" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.4" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\WebService\Request\Document\" />
+  </ItemGroup>
+
+</Project>

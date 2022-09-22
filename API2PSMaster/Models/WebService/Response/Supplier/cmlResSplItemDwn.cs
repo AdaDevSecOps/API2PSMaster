@@ -1,0 +1,21 @@
+﻿using API2PSMaster.Class.Standard;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Web;
+
+namespace API2PSMaster.Models.WebService.Response.Supplier
+{
+    
+    /// <summary>
+    /// Supplier information for download.
+    /// </summary>
+    public class cmlResSplItemDwn
+    {
+        public List<cmlResInfoSpl> raSpl { get; set; }
+        public List<cmlResInfoSplLng> raSplLng { get; set; }
+        public List<cmlResInfoSplCard> raSplCard { get; set; }
+        public List<cmlResInfoSplCredit> raSplCredit { get; set; }
+    }
+}
