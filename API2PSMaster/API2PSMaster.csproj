@@ -10,8 +10,8 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <AssemblyVersion>5.20002.0.1109</AssemblyVersion>
-    <FileVersion>5.20002.0.1109</FileVersion>
+    <AssemblyVersion>5.20002.3.01</AssemblyVersion>
+    <FileVersion>5.20002.3.01</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,13 +1,12 @@
 def githubRepo = 'https://github.com/AdaDevSecOps/API2PSMaster.git'
 def githubBranch = 'main'
 
-def dockerRepo = 'https://docker.io/jirayusamrit/adasoft.jenkin.api/'
-
 pipeline
 {
     agent any
     environment
     {
+        imagename = "api2psmaster:5.20002.3.01"
         dockerImage = ''
     }
     stages{
@@ -17,8 +16,7 @@ pipeline
             {
                 echo "========Cloning Git========"
                 git url: githubRepo,
-                    branch: githubBranch,
-                    credentialsId:'adadev_creds'
+                    branch: githubBranch
             }
             post
             {
@@ -32,26 +30,36 @@ pipeline
                 }
             }
         }
-
-        stage('Docker Build')
+        stage('Build Image')
         {
             steps
             {
-                echo "========Docker Building========"
+                echo 'Building...'
                 script
                 {
-                    dockerImage = docker.build("api2psmaster:5.18003.1.1", ".")
+                    dockerImage = docker.build imagename
                 }
             }
-            post
+        }
+        stage('Remove Container')
+        {
+            steps
             {
-                success
+                echo 'Remove Container...'
+                script
                 {
-                    echo "========Docker Building successfully========"
+                    bat 'docker rm -f api2psmaster '
                 }
-                failure
+            }
+        }
+        stage('Run Container')
+        {
+            steps
+            {
+                echo 'Run Container...'
+                script
                 {
-                    echo "========Docker Building failed========"
+                    bat 'docker run -d --name api2psmaster api2psmaster:5.20002.3.01 '
                 }
             }
         }

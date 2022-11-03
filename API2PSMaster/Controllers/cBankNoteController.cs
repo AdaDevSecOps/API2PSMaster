@@ -31,7 +31,8 @@ namespace API2PSMaster.Controllers
         /// <returns></returns>
         [Route("Download")]
         [HttpGet]
-        public cmlResItem<cmlResBankNoteDwn> GET_PDToDownloadBankNote(DateTime pdDate)
+        //public cmlResItem<cmlResBankNoteDwn> GET_PDToDownloadBankNote(DateTime pdDate)
+        public cmlResItem<cmlResBankNoteDwn> GET_PDToDownloadBankNote(DateTime pdDate, string ptAgnCode = "") //*Arm 65-10-31
         {
             cSP oFunc;
             cCS oCS;
@@ -98,9 +99,17 @@ namespace API2PSMaster.Controllers
                 oSql = new StringBuilder();
                 oSql.AppendLine("SELECT FTRteCode AS rtRteCode, FTBntCode AS rtBntCode, FTBntStaShw AS rtBntStaShw, FCBntRateAmt AS rcBntRateAmt,");
                 oSql.AppendLine("FDLastUpdOn AS rdLastUpdOn, FDCreateOn AS rdCreateOn,");
-                oSql.AppendLine("FTLastUpdBy AS rtLastUpdBy, FTCreateBy AS rtCreateBy");
+                oSql.AppendLine("FTLastUpdBy AS rtLastUpdBy, FTCreateBy AS rtCreateBy,");
+                oSql.AppendLine("FTAgnCode AS rtAgnCode"); //*Arm 65-10-31 -เพิ่ม FTAgnCode
                 oSql.AppendLine("FROM TFNMBankNote with(nolock)");
                 oSql.AppendLine("WHERE CONVERT(VARCHAR(10), FDLastUpdOn, 121) >= '" + string.Format("{0:yyyy-MM-dd}", pdDate) + "'");
+
+                //*Arm 65-10-31
+                if (!string.IsNullOrEmpty(ptAgnCode))
+                {
+                    oSql.AppendLine("AND FTAgnCode = '" + ptAgnCode + "' ");
+                }
+                //+++++++++++++
 
                 oDB = new cDatabase(); //*Arm 64-10-19
                 aoResult.roItem = new cmlResBankNoteDwn();
@@ -129,6 +138,12 @@ namespace API2PSMaster.Controllers
                     oSql.AppendLine("FROM TFNMBankNote_L with(nolock)");
                     oSql.AppendLine("INNER JOIN TFNMBankNote with(nolock) ON TFNMBankNote_L.FTBntCode = TFNMBankNote.FTBntCode");
                     oSql.AppendLine("WHERE CONVERT(VARCHAR(10),TFNMBankNote.FDLastUpdOn,121) >= '" + string.Format("{0:yyyy-MM-dd}", pdDate) + "'");
+                    //*Arm 65-10-31
+                    if (!string.IsNullOrEmpty(ptAgnCode))
+                    {
+                        oSql.AppendLine("AND TFNMBankNote.FTAgnCode = '" + ptAgnCode + "' ");
+                    }
+                    //+++++++++++++
                     //*Arm 64-10-19 Comment Code        
                     //oCmd.CommandText = oSql.ToString();
                     //using (DbDataReader oDR = oCmd.ExecuteReader())
@@ -147,6 +162,12 @@ namespace API2PSMaster.Controllers
                     oSql.AppendLine("FROM TCNMImgObj with(nolock)");
                     oSql.AppendLine("INNER JOIN TFNMBankNote with(nolock) ON TCNMImgObj.FTImgRefID = TFNMBankNote.FTBntCode AND TCNMImgObj.FTImgTable = 'TFNMBankNote'");
                     oSql.AppendLine("WHERE CONVERT(VARCHAR(10),TFNMBankNote.FDLastUpdOn,121) >= '" + string.Format("{0:yyyy-MM-dd}", pdDate) + "'");
+                    //*Arm 65-10-31
+                    if (!string.IsNullOrEmpty(ptAgnCode))
+                    {
+                        oSql.AppendLine("AND TFNMBankNote.FTAgnCode = '" + ptAgnCode + "' ");
+                    }
+                    //+++++++++++++
                     //*Arm 64-10-19 Comment Code        
                     //oCmd.CommandText = oSql.ToString();
                     //using (DbDataReader oDR = oCmd.ExecuteReader())

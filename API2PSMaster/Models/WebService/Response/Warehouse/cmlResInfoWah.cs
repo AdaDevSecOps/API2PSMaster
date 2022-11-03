@@ -59,6 +59,12 @@ namespace API2PSMaster.Models.WebService.Response.Warehouse
         ///ผู้สร้างรายการ
         /// </summary>
         public string rtCreateBy { get; set; }
-        
+
+        public string rtWahStaAlwCntStk { get; set; }  //*Arm 65-09-28 [CR-WMS]
+        public string rtWahStaAlwCostAmt { get; set; }  //*Arm 65-09-28 [CR-WMS]
+        public string rtWahStaAlwPLFrmTBO { get; set; }  //*Arm 65-09-28 [CR-WMS]
+        public string rtWahStaAlwPLFrmSale { get; set; }  //*Arm 65-09-28 [CR-WMS]
+        public string rtWahStaAlwSNPL { get; set; }  //*Arm 65-09-28 [CR-WMS]
+
     }
 }

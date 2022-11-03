@@ -51,5 +51,11 @@ namespace API2PSMaster.Models.WebService.Response.VatRate
         ///ผู้สร้างรายการ
         /// </summary>
         public string rtCreateBy { get; set; }
+
+        /// <summary>
+        /// รหัสประเทศ
+        /// </summary>
+        public string rtCtyCode { get; set; } //*Arm 65-09-20 [CR-Oversea]
+        
     }
 }

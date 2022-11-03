@@ -17,5 +17,6 @@ namespace API2PSMaster.Models.WebService.Response.Product
         public List<cmlResInfoPdtPmtHDCst> raPdtPmtHDCst { get; set; }
         public List<cmlResInfoPdtPmtHDCstPri> raPdtPmtHDCstPri { get; set; }
         public List<cmlResInfoPdtPmtHDChn> raPdtPmtHDChn { get; set; } //*Net 63-12-25 เพิ่มตารางสำหรับโปรโมชั่นที่ผูกกับช่องทางการจำหน่าย
+        public List<cmlResInfoPdtPmtHDZne> raPdtPmtHDZne { get; set; } //*Arm 65-09-19 [CR-Oversea]
     }
 }

@@ -46,6 +46,7 @@ namespace API2PSMaster.Controllers
             cCacheFunc oCacheFunc;
             int nRowEff, nCmdTme, nConTme;
             string tFuncName, tModelErr, tKeyApi, tKeyCache;
+            string tTblPmtTmp = ""; //*Arm 65-09-16
             try
             {
                 Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
@@ -98,18 +99,19 @@ namespace API2PSMaster.Controllers
                 //1. หาเลขที่เอกสารที่ไม่ต้องโหลดไปก่อน
                 //2. Query -ข้อมูล เพื่อส่งกลับไป โดยไม่เอาเอกสาร ที่ได้จากข้อ 1 ไป
 
-
-                //*Arm 63-09-02 หาเอกสารที่ไม่เอา
-                oSql = new StringBuilder();
-                oSql.AppendLine("SELECT FTPmhDocNo FROM TCNTPdtPmtHDBch WITH(NOLOCK) ");
-                oSql.AppendLine("WHERE FTPmhStaType = '2' AND FTPmhBchTo = '" + ptBchCode + "'");
-                oSql.AppendLine("UNION ");
-                oSql.AppendLine("SELECT FTPmhDocNo FROM TCNTPdtPmtHDBch WITH(NOLOCK) ");
-                oSql.AppendLine("WHERE FTPmhStaType = '1'");
-                oSql.AppendLine("AND FTPmhDocNo NOT IN(SELECT FTPmhDocNo FROM TCNTPdtPmtHDBch WITH(NOLOCK) WHERE FTPmhStaType = '1' AND FTPmhBchTo = '" + ptBchCode + "')");
-                odtTmp = new DataTable();
-                odtTmp = new cDatabase().C_DAToSqlQuery(oSql.ToString());
-                //+++++++++++++
+                //*Arm 65-09-19 -Comment Code
+                ////*Arm 63-09-02 หาเอกสารที่ไม่เอา
+                //oSql = new StringBuilder();
+                //oSql.AppendLine("SELECT FTPmhDocNo FROM TCNTPdtPmtHDBch WITH(NOLOCK) ");
+                //oSql.AppendLine("WHERE FTPmhStaType = '2' AND FTPmhBchTo = '" + ptBchCode + "'");
+                //oSql.AppendLine("UNION ");
+                //oSql.AppendLine("SELECT FTPmhDocNo FROM TCNTPdtPmtHDBch WITH(NOLOCK) ");
+                //oSql.AppendLine("WHERE FTPmhStaType = '1'");
+                //oSql.AppendLine("AND FTPmhDocNo NOT IN(SELECT FTPmhDocNo FROM TCNTPdtPmtHDBch WITH(NOLOCK) WHERE FTPmhStaType = '1' AND FTPmhBchTo = '" + ptBchCode + "')");
+                //odtTmp = new DataTable();
+                //odtTmp = new cDatabase().C_DAToSqlQuery(oSql.ToString());
+                ////+++++++++++++
+                //++++++++++++++++++
 
                 //tSqlX += oSql.ToString() + Environment.NewLine; //*Arm 63-09-03 
 
@@ -370,25 +372,93 @@ namespace API2PSMaster.Controllers
                 oDB = new cDatabase();
                 aoResult.roItem = new cmlResPdtPmtDwn();
                 oPdtPmtDwn = new cmlResPdtPmtDwn();
-                oSql = new StringBuilder();
-                oSql.AppendLine("SELECT FTBchCode AS rtBchCode,FTPmhDocNo AS rtPmhDocNo,FDPmhDStart AS rdPmhDStart,FDPmhDStop AS rdPmhDStop");
-                oSql.AppendLine(",FDPmhTStart AS rdPmhTStart ,FDPmhTStop AS rdPmhTStop,FTPmhStaLimitCst AS rtPmhStaLimitCst,FTPmhStaClosed AS rtPmhStaClosed");
-                oSql.AppendLine(",FTPmhStaDoc AS rtPmhStaDoc,FTPmhStaApv AS rtPmhStaApv,FTPmhStaPrcDoc AS rtPmhStaPrcDoc,FNPmhStaDocAct AS rnPmhStaDocAct");
-                oSql.AppendLine(",FTUsrCode AS rtUsrCode,FTPmhUsrApv AS rtPmhUsrApv,FTPmhStaOnTopPmt AS rtPmhStaOnTopPmt,FTPmhStaAlwCalPntStd AS rtPmhStaAlwCalPntStd");
-                oSql.AppendLine(",FTPmhStaRcvFree AS rtPmhStaRcvFree,FTPmhStaLimitGet AS rtPmhStaLimitGet,FTPmhStaLimitTime AS rtPmhStaLimitTime,FTPmhStaGetPdt AS rtPmhStaGetPdt");
-                oSql.AppendLine(",FTPmhRefAccCode AS rtPmhRefAccCode, FTPmhStaPdtExc AS rtPmhStaPdtExc");   //*Arm 63-03-25
-                oSql.AppendLine(",FTRolCode AS rtRolCode,FNPmhLimitQty AS rnPmhLimitQty,FTPmhStaChkLimit AS rtPmhStaChkLimit,FTPmhStaChkCst AS rtPmhStaChkCst");
-                oSql.AppendLine(",FTPmhStaGrpPriority AS rtPmhStaGrpPriority, FTPmhStaChkQuota AS rtPmhStaChkQuota, FTPmhStaGetPri AS rtPmhStaGetPri, FTPmhStaOnTopDis AS rtPmhStaOnTopDis, FTPmhStaSpcGrpDis AS rtPmhStaSpcGrpDis "); //*Arm 63-06-18 เพิ่มตามโครงสร้าง SKC
-                oSql.AppendLine(",FDLastUpdOn AS rdLastUpdOn,FTLastUpdBy AS rtLastUpdBy,FDCreateOn AS rdCreateOn,FTCreateBy AS rtCreateBy");
-                oSql.AppendLine("FROM TCNTPdtPmtHD with(nolock)");
-                oSql.AppendLine("WHERE ISNULL(FTPmhStaApv, '') = '1'");
-                oSql.AppendLine("AND CONVERT(VARCHAR(10), FDPmhDStop, 121) >= CONVERT(VARCHAR(10), GETDATE(), 121)");
-                oSql.AppendLine("AND CONVERT(VARCHAR(10), FDLastUpdOn, 121) >= '" + string.Format("{0:yyyy-MM-dd}", pdDate) + "'");
+                
+                //*Arm 65-09-19 -Comment Code
+                //oSql = new StringBuilder();
+                //oSql.AppendLine("SELECT FTBchCode AS rtBchCode,FTPmhDocNo AS rtPmhDocNo,FDPmhDStart AS rdPmhDStart,FDPmhDStop AS rdPmhDStop");
+                //oSql.AppendLine(",FDPmhTStart AS rdPmhTStart ,FDPmhTStop AS rdPmhTStop,FTPmhStaLimitCst AS rtPmhStaLimitCst,FTPmhStaClosed AS rtPmhStaClosed");
+                //oSql.AppendLine(",FTPmhStaDoc AS rtPmhStaDoc,FTPmhStaApv AS rtPmhStaApv,FTPmhStaPrcDoc AS rtPmhStaPrcDoc,FNPmhStaDocAct AS rnPmhStaDocAct");
+                //oSql.AppendLine(",FTUsrCode AS rtUsrCode,FTPmhUsrApv AS rtPmhUsrApv,FTPmhStaOnTopPmt AS rtPmhStaOnTopPmt,FTPmhStaAlwCalPntStd AS rtPmhStaAlwCalPntStd");
+                //oSql.AppendLine(",FTPmhStaRcvFree AS rtPmhStaRcvFree,FTPmhStaLimitGet AS rtPmhStaLimitGet,FTPmhStaLimitTime AS rtPmhStaLimitTime,FTPmhStaGetPdt AS rtPmhStaGetPdt");
+                //oSql.AppendLine(",FTPmhRefAccCode AS rtPmhRefAccCode, FTPmhStaPdtExc AS rtPmhStaPdtExc");   //*Arm 63-03-25
+                //oSql.AppendLine(",FTRolCode AS rtRolCode,FNPmhLimitQty AS rnPmhLimitQty,FTPmhStaChkLimit AS rtPmhStaChkLimit,FTPmhStaChkCst AS rtPmhStaChkCst");
+                //oSql.AppendLine(",FTPmhStaGrpPriority AS rtPmhStaGrpPriority, FTPmhStaChkQuota AS rtPmhStaChkQuota, FTPmhStaGetPri AS rtPmhStaGetPri, FTPmhStaOnTopDis AS rtPmhStaOnTopDis, FTPmhStaSpcGrpDis AS rtPmhStaSpcGrpDis "); //*Arm 63-06-18 เพิ่มตามโครงสร้าง SKC
+                //oSql.AppendLine(",FDLastUpdOn AS rdLastUpdOn,FTLastUpdBy AS rtLastUpdBy,FDCreateOn AS rdCreateOn,FTCreateBy AS rtCreateBy");
+                //oSql.AppendLine("FROM TCNTPdtPmtHD with(nolock)");
+                //oSql.AppendLine("WHERE ISNULL(FTPmhStaApv, '') = '1'");
+                //oSql.AppendLine("AND CONVERT(VARCHAR(10), FDPmhDStop, 121) >= CONVERT(VARCHAR(10), GETDATE(), 121)");
+                //oSql.AppendLine("AND CONVERT(VARCHAR(10), FDLastUpdOn, 121) >= '" + string.Format("{0:yyyy-MM-dd}", pdDate) + "'");
 
-                if (odtTmp != null && odtTmp.Rows.Count > 0)
-                {
-                    oSql.AppendLine("AND FTPmhDocNo NOT IN (" + String.Join(", ", odtTmp.AsEnumerable().Select(oRow => string.Format("'{0}'", oRow.Field<string>("FTPmhDocNo"))).ToArray()) + ")"); //*Arm 63-09-02 เอาเอกสารที่ไม่เอาออก
-                }
+                //if (odtTmp != null && odtTmp.Rows.Count > 0)
+                //{
+                //    oSql.AppendLine("AND FTPmhDocNo NOT IN (" + String.Join(", ", odtTmp.AsEnumerable().Select(oRow => string.Format("'{0}'", oRow.Field<string>("FTPmhDocNo"))).ToArray()) + ")"); //*Arm 63-09-02 เอาเอกสารที่ไม่เอาออก
+                //}
+                //+++++++++++++++++
+
+                //*Arm 65-09-19 -[CR-Oversea]
+
+                tTblPmtTmp = "TTmpPmt" + ptBchCode + DateTime.Now.ToString("HHmmssfff");
+
+                oSql = new StringBuilder();
+                oSql.AppendLine("IF OBJECT_ID(N'" + tTblPmtTmp + "') IS NOT NULL BEGIN");
+                oSql.AppendLine("   DROP TABLE " + tTblPmtTmp);
+                oSql.AppendLine("END ");
+                new cDatabase().C_DATnExecuteSql(oSql.ToString(), nCmdTme);
+
+
+                //ที่รวมรายการ
+                oSql.Clear();
+                oSql.AppendLine("SELECT PMT.FTPmhDocNo ");
+                oSql.AppendLine("INTO " + tTblPmtTmp);
+                oSql.AppendLine("FROM ( SELECT HD.FTPmhDocNo ");
+                oSql.AppendLine("   FROM TCNMBranch BCH WITH(NOLOCK) ");
+                oSql.AppendLine("   INNER JOIN TCNMZoneObj ZOBJ WITH(NOLOCK) ON BCH.FTCtyCode = ZOBJ.FTZneRefCode AND ZOBJ.FTZneTable = 'TCNMCountry' ");
+                oSql.AppendLine("   INNER JOIN TCNTPdtPmtHDZne HDZne WITH(NOLOCK) ON ZOBJ.FTZneChain = HDZne.FTZneChain AND HDZne.FTPmhStaType = '1' ");
+                oSql.AppendLine("   INNER JOIN TCNTPdtPmtHD HD WITH(NOLOCK) ON HDZne.FTPmhDocNo = HD.FTPmhDocNo ");
+                oSql.AppendLine("   WHERE BCH.FTBchCode = '" + ptBchCode + "' ");
+                oSql.AppendLine("   AND ISNULL(HD.FTPmhStaApv, '') = '1' ");
+                oSql.AppendLine("   AND CONVERT(VARCHAR(10), HD.FDPmhDStop, 121) >= CONVERT(VARCHAR(10), GETDATE(), 121) ");
+                oSql.AppendLine("   AND CONVERT(VARCHAR(10), HD.FDLastUpdOn, 121) >= '" + string.Format("{0:yyyy-MM-dd}", pdDate) + "' ");
+                oSql.AppendLine("   UNION ");
+                //ไม่ได้ Spc Zone
+                oSql.AppendLine("   SELECT HD.FTPmhDocNo ");
+                oSql.AppendLine("   FROM TCNTPdtPmtHD HD WITH(NOLOCK) ");
+                oSql.AppendLine("   WHERE ISNULL(HD.FTPmhStaApv, '') = '1' ");
+                oSql.AppendLine("   AND CONVERT(VARCHAR(10), HD.FDPmhDStop, 121) >= CONVERT(VARCHAR(10), GETDATE(), 121) ");
+                oSql.AppendLine("   AND CONVERT(VARCHAR(10), HD.FDLastUpdOn, 121) >= '" + string.Format("{0:yyyy-MM-dd}", pdDate) + "' ");
+                oSql.AppendLine("   AND HD.FTPmhDocNo NOT IN (SELECT FTPmhDocNo FROM TCNTPdtPmtHDZne WITH(NOLOCK)) ");
+                oSql.AppendLine(")PMT ");
+                new cDatabase().C_DATnExecuteSql(oSql.ToString(), nCmdTme);
+
+                oSql.Clear();
+                oSql.AppendLine("DELETE Tmp FROM " + tTblPmtTmp + " Tmp ");
+                oSql.AppendLine("INNER JOIN (  ");
+                oSql.AppendLine("       SELECT FTPmhDocNo FROM TCNTPdtPmtHDBch WITH(NOLOCK)");
+                oSql.AppendLine("       WHERE FTPmhStaType = '2' ");
+                oSql.AppendLine("       UNION ");
+                oSql.AppendLine("       SELECT FTPmhDocNo FROM TCNTPdtPmtHDBch WITH(NOLOCK)");
+                oSql.AppendLine("       WHERE FTPmhStaType = '1' ");
+                oSql.AppendLine("       AND FTPmhDocNo NOT IN ( SELECT FTPmhDocNo FROM TCNTPdtPmtHDBch WITH(NOLOCK) WHERE FTPmhStaType = '1' AND FTPmhBchTo = '" + ptBchCode + "' )");
+                oSql.AppendLine("   ) HDBch ON HDBch.FTPmhDocNo = Tmp.FTPmhDocNo ");
+                new cDatabase().C_DATnExecuteSql(oSql.ToString(), nCmdTme);
+
+                //GET TCNTPdtPmtHD
+                oSql.Clear();
+                oSql.AppendLine("SELECT HD.FTBchCode AS rtBchCode, HD.FTPmhDocNo AS rtPmhDocNo, HD.FDPmhDStart AS rdPmhDStart, HD.FDPmhDStop AS rdPmhDStop");
+                oSql.AppendLine(",HD.FDPmhTStart AS rdPmhTStart, HD.FDPmhTStop AS rdPmhTStop, HD.FTPmhStaLimitCst AS rtPmhStaLimitCst, HD.FTPmhStaClosed AS rtPmhStaClosed");
+                oSql.AppendLine(",HD.FTPmhStaDoc AS rtPmhStaDoc, HD.FTPmhStaApv AS rtPmhStaApv, HD.FTPmhStaPrcDoc AS rtPmhStaPrcDoc, HD.FNPmhStaDocAct AS rnPmhStaDocAct");
+                oSql.AppendLine(",HD.FTUsrCode AS rtUsrCode, HD.FTPmhUsrApv AS rtPmhUsrApv, HD.FTPmhStaOnTopPmt AS rtPmhStaOnTopPmt, HD.FTPmhStaAlwCalPntStd AS rtPmhStaAlwCalPntStd");
+                oSql.AppendLine(",HD.FTPmhStaRcvFree AS rtPmhStaRcvFree, HD.FTPmhStaLimitGet AS rtPmhStaLimitGet, HD.FTPmhStaLimitTime AS rtPmhStaLimitTime, HD.FTPmhStaGetPdt AS rtPmhStaGetPdt");
+                oSql.AppendLine(",HD.FTPmhRefAccCode AS rtPmhRefAccCode, HD.FTPmhStaPdtExc AS rtPmhStaPdtExc");   //*Arm 63-03-25
+                oSql.AppendLine(",HD.FTRolCode AS rtRolCode, HD.FNPmhLimitQty AS rnPmhLimitQty, HD.FTPmhStaChkLimit AS rtPmhStaChkLimit, HD.FTPmhStaChkCst AS rtPmhStaChkCst");
+                oSql.AppendLine(",HD.FTPmhStaGrpPriority AS rtPmhStaGrpPriority, HD.FTPmhStaChkQuota AS rtPmhStaChkQuota, HD.FTPmhStaGetPri AS rtPmhStaGetPri, HD.FTPmhStaOnTopDis AS rtPmhStaOnTopDis, HD.FTPmhStaSpcGrpDis AS rtPmhStaSpcGrpDis "); //*Arm 63-06-18 เพิ่มตามโครงสร้าง SKC
+                oSql.AppendLine(",HD.FDLastUpdOn AS rdLastUpdOn, HD.FTLastUpdBy AS rtLastUpdBy, HD.FDCreateOn AS rdCreateOn, HD.FTCreateBy AS rtCreateBy");
+                oSql.AppendLine("FROM TCNTPdtPmtHD HD with(nolock)");
+                oSql.AppendLine("INNER JOIN " + tTblPmtTmp + " TMP with(nolock) ON HD.FTPmhDocNo = TMP.FTPmhDocNo");
+
+                //++++++++++++++
+
+
                 oPdtPmtDwn.raPdtPmtHD = oDB.C_DATaSqlQuery<cmlResInfoPdtPmtHD>(oSql.ToString());
                 if (oPdtPmtDwn.raPdtPmtHD.Count > 0)
                 {
@@ -396,19 +466,26 @@ namespace API2PSMaster.Controllers
 
                     //*Arm 63-03-25 ปรับ Standard
                     oSql = new StringBuilder();
-                    oSql.AppendLine("SELECT DT.FTBchCode AS rtBchCode ,DT.FTPmhDocNo AS rtPmhDocNo,DT.FNPmdSeq AS rnPmdSeq,DT.FTPmdStaType AS rtPmdStaType");
+                    oSql.AppendLine("SELECT DISTINCT DT.FTBchCode AS rtBchCode ,DT.FTPmhDocNo AS rtPmhDocNo,DT.FNPmdSeq AS rnPmdSeq,DT.FTPmdStaType AS rtPmdStaType");
                     oSql.AppendLine(",DT.FTPmdGrpName AS rtPmdGrpName,DT.FTPmdRefCode AS rtPmdRefCode,DT.FTPmdSubRef AS rtPmdSubRef,DT.FTPmdBarCode AS rtPmdBarCode");
                     oSql.AppendLine("FROM TCNTPdtPmtDT DT with(nolock)");
-                    oSql.AppendLine("INNER JOIN TCNTPdtPmtHD HD with(nolock) ON DT.FTPmhDocNo = HD.FTPmhDocNo");
-                    oSql.AppendLine("WHERE ISNULL(HD.FTPmhStaApv, '') = '1'");
-                    oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDPmhDStop, 121) >= CONVERT(VARCHAR(10), GETDATE(), 121)");
-                    oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDLastUpdOn, 121) >= '" + string.Format("{0:yyyy-MM-dd}", pdDate) + "'");
 
-                    if (odtTmp != null && odtTmp.Rows.Count > 0)
-                    {
-                        oSql.AppendLine("AND DT.FTPmhDocNo NOT IN (" + String.Join(", ", odtTmp.AsEnumerable().Select(oRow => string.Format("'{0}'", oRow.Field<string>("FTPmhDocNo"))).ToArray()) + ")"); //*Arm 63-09-02 - เอาเอกสารที่ไม่เอาออก
-                    }
+                    //*Arm 65-09-19 Comment Code
+                    //oSql.AppendLine("INNER JOIN TCNTPdtPmtHD HD with(nolock) ON DT.FTPmhDocNo = HD.FTPmhDocNo");
+                    //oSql.AppendLine("WHERE ISNULL(HD.FTPmhStaApv, '') = '1'");
+                    //oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDPmhDStop, 121) >= CONVERT(VARCHAR(10), GETDATE(), 121)");
+                    //oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDLastUpdOn, 121) >= '" + string.Format("{0:yyyy-MM-dd}", pdDate) + "'");
+
+                    //if (odtTmp != null && odtTmp.Rows.Count > 0)
+                    //{
+                    //    oSql.AppendLine("AND DT.FTPmhDocNo NOT IN (" + String.Join(", ", odtTmp.AsEnumerable().Select(oRow => string.Format("'{0}'", oRow.Field<string>("FTPmhDocNo"))).ToArray()) + ")"); //*Arm 63-09-02 - เอาเอกสารที่ไม่เอาออก
+                    //}
                     //++++++++++++++
+
+                    //*Arm 65-09-19 [CR-Oversea]
+                    oSql.AppendLine("INNER JOIN  " + tTblPmtTmp + " HD with(nolock) ON DT.FTPmhDocNo = HD.FTPmhDocNo");
+                    //+++++++++++++++
+
                     oPdtPmtDwn.raPdtPmtDT = oDB.C_DATaSqlQuery<cmlResInfoPdtPmtDT>(oSql.ToString());
 
                     //tSqlX += oSql.ToString() + Environment.NewLine; //*Arm 63-09-03 
@@ -416,21 +493,27 @@ namespace API2PSMaster.Controllers
                     //*Arm 63-03-26
                     //Promotion CB
                     oSql = new StringBuilder();
-                    oSql.AppendLine("SELECT PmtCB.FTBchCode AS rtBchCode ,PmtCB.FTPmhDocNo AS rtPmhDocNo,PmtCB.FNPbySeq AS rnPbySeq,PmtCB.FTPmdGrpName AS rtPmdGrpName");
+                    oSql.AppendLine("SELECT DISTINCT PmtCB.FTBchCode AS rtBchCode ,PmtCB.FTPmhDocNo AS rtPmhDocNo,PmtCB.FNPbySeq AS rnPbySeq,PmtCB.FTPmdGrpName AS rtPmdGrpName");
                     oSql.AppendLine(",PmtCB.FTPbyStaCalSum AS rtPbyStaCalSum,PmtCB.FTPbyStaBuyCond AS rtPbyStaBuyCond,PmtCB.FTPbyStaPdtDT AS rtPbyStaPdtDT,PmtCB.FCPbyPerAvgDis AS rcPbyPerAvgDis");
                     oSql.AppendLine(",PmtCB.FCPbyMinSetPri AS rcPbyMinSetPri,PmtCB.FCPbyMinValue AS rcPbyMinValue,PmtCB.FCPbyMaxValue AS rcPbyMaxValue,PmtCB.FTPbyMinTime AS rtPbyMinTime");
                     oSql.AppendLine(",PmtCB.FTPbyMaxTime AS rtPbyMaxTime");
                     oSql.AppendLine("FROM TCNTPdtPmtCB PmtCB with(nolock)");
-                    oSql.AppendLine("INNER JOIN TCNTPdtPmtHD HD with(nolock) ON PmtCB.FTPmhDocNo = HD.FTPmhDocNo");
-                    oSql.AppendLine("WHERE ISNULL(HD.FTPmhStaApv, '') = '1'");
-                    oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDPmhDStop, 121) >= CONVERT(VARCHAR(10), GETDATE(), 121)");
-                    oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDLastUpdOn, 121) >= '" + string.Format("{0:yyyy-MM-dd}", pdDate) + "'");
+                    //*Arm 65-09-19 Comment Code
+                    //oSql.AppendLine("INNER JOIN TCNTPdtPmtHD HD with(nolock) ON PmtCB.FTPmhDocNo = HD.FTPmhDocNo");
+                    //oSql.AppendLine("WHERE ISNULL(HD.FTPmhStaApv, '') = '1'");
+                    //oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDPmhDStop, 121) >= CONVERT(VARCHAR(10), GETDATE(), 121)");
+                    //oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDLastUpdOn, 121) >= '" + string.Format("{0:yyyy-MM-dd}", pdDate) + "'");
 
-                    if (odtTmp != null && odtTmp.Rows.Count > 0)
-                    {
-                        oSql.AppendLine("AND PmtCB.FTPmhDocNo NOT IN (" + String.Join(", ", odtTmp.AsEnumerable().Select(oRow => string.Format("'{0}'", oRow.Field<string>("FTPmhDocNo"))).ToArray()) + ")"); //*Arm 63-09-02 - เอาเอกสารที่ไม่เอาออก
-                    }
+                    //if (odtTmp != null && odtTmp.Rows.Count > 0)
+                    //{
+                    //    oSql.AppendLine("AND PmtCB.FTPmhDocNo NOT IN (" + String.Join(", ", odtTmp.AsEnumerable().Select(oRow => string.Format("'{0}'", oRow.Field<string>("FTPmhDocNo"))).ToArray()) + ")"); //*Arm 63-09-02 - เอาเอกสารที่ไม่เอาออก
+                    //}
+                    //+++++++++++++++
 
+                    //*Arm 65-09-19 [CR-Oversea]
+                    oSql.AppendLine("INNER JOIN  " + tTblPmtTmp + " HD with(nolock) ON PmtCB.FTPmhDocNo = HD.FTPmhDocNo");
+                    //+++++++++++++++
+                    
                     oPdtPmtDwn.raPdtPmtCB = oDB.C_DATaSqlQuery<cmlResInfoPdtPmtCB>(oSql.ToString());
 
                     //tSqlX += oSql.ToString() + Environment.NewLine; //*Arm 63-09-03 
@@ -438,21 +521,28 @@ namespace API2PSMaster.Controllers
                     //Promotion CG
                     //*Arm 63-03-26
                     oSql = new StringBuilder();
-                    oSql.AppendLine("SELECT PmtCG.FTBchCode AS rtBchCode ,PmtCG.FTPmhDocNo AS rtPmhDocNo, PmtCG.FNPgtSeq AS rnPgtSeq ,PmtCG.FTPmdGrpName AS rtPmdGrpName");
+                    oSql.AppendLine("SELECT DISTINCT PmtCG.FTBchCode AS rtBchCode ,PmtCG.FTPmhDocNo AS rtPmhDocNo, PmtCG.FNPgtSeq AS rnPgtSeq ,PmtCG.FTPmdGrpName AS rtPmdGrpName");
                     oSql.AppendLine(",PmtCG.FTPgtStaGetEffect AS rtPgtStaGetEffect ,PmtCG.FTPgtStaGetType AS rtPgtStaGetType ,PmtCG.FTPgtStaGetPdt AS rtPgtStaGetPdt ,PmtCG.FTRolCode AS rtRolCode");
                     oSql.AppendLine(",PmtCG.FCPgtGetvalue AS rcPgtGetvalue ,PmtCG.FTPplCode AS rtPplCode ,PmtCG.FCPgtGetQty AS rcPgtGetQty ,PmtCG.FCPgtPerAvgDis AS rcPgtPerAvgDis");
                     oSql.AppendLine(",PmtCG.FTPgtStaPoint AS rtPgtStaPoint ,FTPgtStaPntCalType AS rtPgtStaPntCalType ,PmtCG.FTPgtStaPdtDT AS rtPgtStaPdtDT ,PmtCG.FNPgtPntGet AS rnPgtPntGet");
                     oSql.AppendLine(",PmtCG.FNPgtPntBuy AS rnPgtPntBuy ,PmtCG.FTPgtStaCoupon AS rtPgtStaCoupon,PmtCG.FTPgtCpnText AS rtPgtCpnText,PmtCG.FTCphDocNo AS rtCphDocNo");
                     oSql.AppendLine("FROM TCNTPdtPmtCG PmtCG with(nolock)");
-                    oSql.AppendLine("INNER JOIN TCNTPdtPmtHD HD with(nolock) ON PmtCG.FTPmhDocNo = HD.FTPmhDocNo"); //PmtCG.FCPgtStaPntCalType
-                    oSql.AppendLine("WHERE ISNULL(HD.FTPmhStaApv, '') = '1'");
-                    oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDPmhDStop, 121) >= CONVERT(VARCHAR(10), GETDATE(), 121)");
-                    oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDLastUpdOn, 121) >= '" + string.Format("{0:yyyy-MM-dd}", pdDate) + "'");
+                    //*Arm 65-09-19 Comment Code
+                    //oSql.AppendLine("INNER JOIN TCNTPdtPmtHD HD with(nolock) ON PmtCG.FTPmhDocNo = HD.FTPmhDocNo"); //PmtCG.FCPgtStaPntCalType
+                    //oSql.AppendLine("WHERE ISNULL(HD.FTPmhStaApv, '') = '1'");
+                    //oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDPmhDStop, 121) >= CONVERT(VARCHAR(10), GETDATE(), 121)");
+                    //oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDLastUpdOn, 121) >= '" + string.Format("{0:yyyy-MM-dd}", pdDate) + "'");
 
-                    if (odtTmp != null && odtTmp.Rows.Count > 0)
-                    {
-                        oSql.AppendLine("AND PmtCG.FTPmhDocNo NOT IN (" + String.Join(", ", odtTmp.AsEnumerable().Select(oRow => string.Format("'{0}'", oRow.Field<string>("FTPmhDocNo"))).ToArray()) + ")"); //*Arm 63-09-02 - เอาเอกสารที่ไม่เอาออก
-                    }
+                    //if (odtTmp != null && odtTmp.Rows.Count > 0)
+                    //{
+                    //    oSql.AppendLine("AND PmtCG.FTPmhDocNo NOT IN (" + String.Join(", ", odtTmp.AsEnumerable().Select(oRow => string.Format("'{0}'", oRow.Field<string>("FTPmhDocNo"))).ToArray()) + ")"); //*Arm 63-09-02 - เอาเอกสารที่ไม่เอาออก
+                    //}
+                    //++++++++++++++
+
+                    //*Arm 65-09-19 [CR-Oversea]
+                    oSql.AppendLine("INNER JOIN  " + tTblPmtTmp + " HD with(nolock) ON PmtCG.FTPmhDocNo = HD.FTPmhDocNo");
+                    //+++++++++++++++
+                    
                     oPdtPmtDwn.raPdtPmtCG = oDB.C_DATaSqlQuery<cmlResInfoPdtPmtCG>(oSql.ToString());
 
                     //tSqlX += oSql.ToString() + Environment.NewLine; //*Arm 63-09-03 
@@ -460,18 +550,25 @@ namespace API2PSMaster.Controllers
                     //*Arm 63-03-26
                     //Promotion HD_L
                     oSql = new StringBuilder();
-                    oSql.AppendLine("SELECT HDL.FTBchCode AS rtBchCode,HDL.FTPmhDocNo AS rtPmhDocNo ,HDL.FNLngID AS rnLngID ,HDL.FTPmhName AS rtPmhName");
+                    oSql.AppendLine("SELECT DISTINCT HDL.FTBchCode AS rtBchCode,HDL.FTPmhDocNo AS rtPmhDocNo ,HDL.FNLngID AS rnLngID ,HDL.FTPmhName AS rtPmhName");
                     oSql.AppendLine(",HDL.FTPmhNameSlip AS rtPmhNameSlip ,HDL.FTPmhRmk AS rtPmhRmk");
                     oSql.AppendLine("FROM TCNTPdtPmtHD_L HDL with(nolock)");
-                    oSql.AppendLine("INNER JOIN TCNTPdtPmtHD HD with(nolock) ON HDL.FTPmhDocNo = HD.FTPmhDocNo");
-                    oSql.AppendLine("WHERE ISNULL(HD.FTPmhStaApv, '') = '1'");
-                    oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDPmhDStop, 121) >= CONVERT(VARCHAR(10), GETDATE(), 121)");
-                    oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDLastUpdOn, 121) >= '" + string.Format("{0:yyyy-MM-dd}", pdDate) + "'");
+                    //*Arm 65-09-19 Comment Code
+                    //oSql.AppendLine("INNER JOIN TCNTPdtPmtHD HD with(nolock) ON HDL.FTPmhDocNo = HD.FTPmhDocNo");
+                    //oSql.AppendLine("WHERE ISNULL(HD.FTPmhStaApv, '') = '1'");
+                    //oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDPmhDStop, 121) >= CONVERT(VARCHAR(10), GETDATE(), 121)");
+                    //oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDLastUpdOn, 121) >= '" + string.Format("{0:yyyy-MM-dd}", pdDate) + "'");
 
-                    if (odtTmp != null && odtTmp.Rows.Count > 0)
-                    {
-                        oSql.AppendLine("AND HDL.FTPmhDocNo NOT IN (" + String.Join(", ", odtTmp.AsEnumerable().Select(oRow => string.Format("'{0}'", oRow.Field<string>("FTPmhDocNo"))).ToArray()) + ")"); //*Arm 63-09-02 - เอาเอกสารที่ไม่เอาออก
-                    }
+                    //if (odtTmp != null && odtTmp.Rows.Count > 0)
+                    //{
+                    //    oSql.AppendLine("AND HDL.FTPmhDocNo NOT IN (" + String.Join(", ", odtTmp.AsEnumerable().Select(oRow => string.Format("'{0}'", oRow.Field<string>("FTPmhDocNo"))).ToArray()) + ")"); //*Arm 63-09-02 - เอาเอกสารที่ไม่เอาออก
+                    //}
+                    //++++++++++++++
+
+                    //*Arm 65-09-19 [CR-Oversea]
+                    oSql.AppendLine("INNER JOIN  " + tTblPmtTmp + " HD with(nolock) ON HDL.FTPmhDocNo = HD.FTPmhDocNo");
+                    //+++++++++++++++
+
                     oPdtPmtDwn.raPdtPmtHD_L = oDB.C_DATaSqlQuery<cmlResInfoPdtPmtHD_L>(oSql.ToString());
 
                     //tSqlX += oSql.ToString() + Environment.NewLine; //*Arm 63-09-03 
@@ -479,18 +576,25 @@ namespace API2PSMaster.Controllers
                     //*Arm 63-03-26
                     //Promotion HDBch
                     oSql = new StringBuilder();
-                    oSql.AppendLine("SELECT HDBch.FTBchCode AS rtBchCode,HDBch.FTPmhDocNo AS rtPmhDocNo,HDBch.FTPmhBchTo AS rtPmhBchTo,HDBch.FTPmhMerTo AS rtPmhMerTo");
+                    oSql.AppendLine("SELECT DISTINCT HDBch.FTBchCode AS rtBchCode,HDBch.FTPmhDocNo AS rtPmhDocNo,HDBch.FTPmhBchTo AS rtPmhBchTo,HDBch.FTPmhMerTo AS rtPmhMerTo");
                     oSql.AppendLine(",HDBch.FTPmhShpTo AS rtPmhShpTo,HDBch.FTPmhStaType AS rtPmhStaType");
                     oSql.AppendLine("FROM TCNTPdtPmtHDBch HDBch with(nolock)");
-                    oSql.AppendLine("INNER JOIN TCNTPdtPmtHD HD with(nolock) ON HDBch.FTPmhDocNo = HD.FTPmhDocNo");
-                    oSql.AppendLine("WHERE ISNULL(HD.FTPmhStaApv, '') = '1'");
-                    oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDPmhDStop, 121) >= CONVERT(VARCHAR(10), GETDATE(), 121)");
-                    oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDLastUpdOn, 121) >= '" + string.Format("{0:yyyy-MM-dd}", pdDate) + "'");
+                    //*Arm 65-09-19 Comment Code
+                    //oSql.AppendLine("INNER JOIN TCNTPdtPmtHD HD with(nolock) ON HDBch.FTPmhDocNo = HD.FTPmhDocNo");
+                    //oSql.AppendLine("WHERE ISNULL(HD.FTPmhStaApv, '') = '1'");
+                    //oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDPmhDStop, 121) >= CONVERT(VARCHAR(10), GETDATE(), 121)");
+                    //oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDLastUpdOn, 121) >= '" + string.Format("{0:yyyy-MM-dd}", pdDate) + "'");
 
-                    if (odtTmp != null && odtTmp.Rows.Count > 0)
-                    {
-                        oSql.AppendLine("AND HDBch.FTPmhDocNo NOT IN (" + String.Join(", ", odtTmp.AsEnumerable().Select(oRow => string.Format("'{0}'", oRow.Field<string>("FTPmhDocNo"))).ToArray()) + ")"); //*Arm 63-09-02 - เอาเอกสารที่ไม่เอาออก
-                    }
+                    //if (odtTmp != null && odtTmp.Rows.Count > 0)
+                    //{
+                    //    oSql.AppendLine("AND HDBch.FTPmhDocNo NOT IN (" + String.Join(", ", odtTmp.AsEnumerable().Select(oRow => string.Format("'{0}'", oRow.Field<string>("FTPmhDocNo"))).ToArray()) + ")"); //*Arm 63-09-02 - เอาเอกสารที่ไม่เอาออก
+                    //}
+                    //++++++++++++++
+
+                    //*Arm 65-09-19 [CR-Oversea]
+                    oSql.AppendLine("INNER JOIN  " + tTblPmtTmp + " HD with(nolock) ON HDBch.FTPmhDocNo = HD.FTPmhDocNo");
+                    //+++++++++++++++
+
                     oPdtPmtDwn.raPdtPmtHDBch = oDB.C_DATaSqlQuery<cmlResInfoPdtPmtHDBch>(oSql.ToString());
 
                     //tSqlX += oSql.ToString() + Environment.NewLine; //*Arm 63-09-03 
@@ -498,18 +602,25 @@ namespace API2PSMaster.Controllers
                     //*Arm 63-03-26
                     //Promotion HDCst
                     oSql = new StringBuilder();
-                    oSql.AppendLine("SELECT HDCst.FTBchCode AS rtBchCode,HDCst.FTPmhDocNo AS rtPmhDocNo,HDCst.FTSpmStaLimitCst AS rtSpmStaLimitCst,HDCst.FNSpmMemAgeLT AS rnSpmMemAgeLT");
+                    oSql.AppendLine("SELECT DISTINCT HDCst.FTBchCode AS rtBchCode,HDCst.FTPmhDocNo AS rtPmhDocNo,HDCst.FTSpmStaLimitCst AS rtSpmStaLimitCst,HDCst.FNSpmMemAgeLT AS rnSpmMemAgeLT");
                     oSql.AppendLine(",HDCst.FTSpmStaChkCstDOB AS rtSpmStaChkCstDOB,HDCst.FNPmhCstDobPrev AS rnPmhCstDobPrev,HDCst.FNPmhCstDobNext AS rnPmhCstDobNext");
                     oSql.AppendLine("FROM TCNTPdtPmtHDCst HDCst with(nolock)");
-                    oSql.AppendLine("INNER JOIN TCNTPdtPmtHD HD with(nolock) ON HDCst.FTPmhDocNo = HD.FTPmhDocNo");
-                    oSql.AppendLine("WHERE ISNULL(HD.FTPmhStaApv, '') = '1'");
-                    oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDPmhDStop, 121) >= CONVERT(VARCHAR(10), GETDATE(), 121)");
-                    oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDLastUpdOn, 121) >= '" + string.Format("{0:yyyy-MM-dd}", pdDate) + "'");
+                    //*Arm 65-09-19 Comment Code
+                    //oSql.AppendLine("INNER JOIN TCNTPdtPmtHD HD with(nolock) ON HDCst.FTPmhDocNo = HD.FTPmhDocNo");
+                    //oSql.AppendLine("WHERE ISNULL(HD.FTPmhStaApv, '') = '1'");
+                    //oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDPmhDStop, 121) >= CONVERT(VARCHAR(10), GETDATE(), 121)");
+                    //oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDLastUpdOn, 121) >= '" + string.Format("{0:yyyy-MM-dd}", pdDate) + "'");
 
-                    if (odtTmp != null && odtTmp.Rows.Count > 0)
-                    {
-                        oSql.AppendLine("AND HDCst.FTPmhDocNo NOT IN (" + String.Join(", ", odtTmp.AsEnumerable().Select(oRow => string.Format("'{0}'", oRow.Field<string>("FTPmhDocNo"))).ToArray()) + ")"); //*Arm 63-09-02 - เอาเอกสารที่ไม่เอาออก
-                    }
+                    //if (odtTmp != null && odtTmp.Rows.Count > 0)
+                    //{
+                    //    oSql.AppendLine("AND HDCst.FTPmhDocNo NOT IN (" + String.Join(", ", odtTmp.AsEnumerable().Select(oRow => string.Format("'{0}'", oRow.Field<string>("FTPmhDocNo"))).ToArray()) + ")"); //*Arm 63-09-02 - เอาเอกสารที่ไม่เอาออก
+                    //}
+                    //++++++++++++++++
+
+                    //*Arm 65-09-19 [CR-Oversea]
+                    oSql.AppendLine("INNER JOIN  " + tTblPmtTmp + " HD with(nolock) ON HDCst.FTPmhDocNo = HD.FTPmhDocNo ");
+                    //+++++++++++++++
+
                     oPdtPmtDwn.raPdtPmtHDCst = oDB.C_DATaSqlQuery<cmlResInfoPdtPmtHDCst>(oSql.ToString());
 
                     //tSqlX += oSql.ToString() + Environment.NewLine; //*Arm 63-09-03 
@@ -517,36 +628,58 @@ namespace API2PSMaster.Controllers
                     //*Arm 63-03-26
                     //Promotion CstPri
                     oSql = new StringBuilder();
-                    oSql.AppendLine("SELECT CstPri.FTBchCode AS rtBchCode,CstPri.FTPmhDocNo AS rtPmhDocNo,CstPri.FTPplCode AS rtPplCode ,CstPri.FTPmhStaType AS rtPmhStaType");
+                    oSql.AppendLine("SELECT DISTINCT CstPri.FTBchCode AS rtBchCode,CstPri.FTPmhDocNo AS rtPmhDocNo,CstPri.FTPplCode AS rtPplCode ,CstPri.FTPmhStaType AS rtPmhStaType");
                     oSql.AppendLine("FROM TCNTPdtPmtHDCstPri CstPri with(nolock)");
-                    oSql.AppendLine("INNER JOIN TCNTPdtPmtHD HD with(nolock) ON CstPri.FTPmhDocNo = HD.FTPmhDocNo");
-                    oSql.AppendLine("WHERE ISNULL(HD.FTPmhStaApv, '') = '1'");
-                    oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDPmhDStop, 121) >= CONVERT(VARCHAR(10), GETDATE(), 121)");
-                    oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDLastUpdOn, 121) >= '" + string.Format("{0:yyyy-MM-dd}", pdDate) + "'");
+                    //*Arm 65-09-19 Comment Code
+                    //oSql.AppendLine("INNER JOIN TCNTPdtPmtHD HD with(nolock) ON CstPri.FTPmhDocNo = HD.FTPmhDocNo");
+                    //oSql.AppendLine("WHERE ISNULL(HD.FTPmhStaApv, '') = '1'");
+                    //oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDPmhDStop, 121) >= CONVERT(VARCHAR(10), GETDATE(), 121)");
+                    //oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDLastUpdOn, 121) >= '" + string.Format("{0:yyyy-MM-dd}", pdDate) + "'");
 
-                    if (odtTmp != null && odtTmp.Rows.Count > 0)
-                    {
-                        oSql.AppendLine("AND CstPri.FTPmhDocNo NOT IN (" + String.Join(", ", odtTmp.AsEnumerable().Select(oRow => string.Format("'{0}'", oRow.Field<string>("FTPmhDocNo"))).ToArray()) + ")"); //*Arm 63-09-02 - เอาเอกสารที่ไม่เอาออก
-                    }
+                    //if (odtTmp != null && odtTmp.Rows.Count > 0)
+                    //{
+                    //    oSql.AppendLine("AND CstPri.FTPmhDocNo NOT IN (" + String.Join(", ", odtTmp.AsEnumerable().Select(oRow => string.Format("'{0}'", oRow.Field<string>("FTPmhDocNo"))).ToArray()) + ")"); //*Arm 63-09-02 - เอาเอกสารที่ไม่เอาออก
+                    //}
+                    //+++++++++++++++++
+
+                    //*Arm 65-09-19 [CR-Oversea]
+                    oSql.AppendLine("INNER JOIN  " + tTblPmtTmp + " HD with(nolock) ON CstPri.FTPmhDocNo = HD.FTPmhDocNo ");
+                    //+++++++++++++++
+                    
                     oPdtPmtDwn.raPdtPmtHDCstPri = oDB.C_DATaSqlQuery<cmlResInfoPdtPmtHDCstPri>(oSql.ToString());
 
                     //*Net 63-12-25
                     //Promotion Channel
                     oSql = new StringBuilder();
-                    oSql.AppendLine("SELECT CHN.FTBchCode AS rtBchCode, CHN.FTPmhDocNo AS rtPmhDocNo, ");
+                    oSql.AppendLine("SELECT DISTINCT CHN.FTBchCode AS rtBchCode, CHN.FTPmhDocNo AS rtPmhDocNo, ");
                     oSql.AppendLine("CHN.FTChnCode AS rtChnCode, CHN.FTPmhStaType AS rtPmhStaType");
                     oSql.AppendLine(" FROM TCNTPdtPmtHDChn CHN WITH(NOLOCK)");
-                    oSql.AppendLine("INNER JOIN TCNTPdtPmtHD HD with(nolock) ON CHN.FTPmhDocNo = HD.FTPmhDocNo");
-                    oSql.AppendLine("WHERE ISNULL(HD.FTPmhStaApv, '') = '1'");
-                    oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDPmhDStop, 121) >= CONVERT(VARCHAR(10), GETDATE(), 121)");
-                    oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDLastUpdOn, 121) >= '" + string.Format("{0:yyyy-MM-dd}", pdDate) + "'");
+                    //*Arm 65-09-19 Comment Code
+                    //oSql.AppendLine("INNER JOIN TCNTPdtPmtHD HD with(nolock) ON CHN.FTPmhDocNo = HD.FTPmhDocNo");
+                    //oSql.AppendLine("WHERE ISNULL(HD.FTPmhStaApv, '') = '1'");
+                    //oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDPmhDStop, 121) >= CONVERT(VARCHAR(10), GETDATE(), 121)");
+                    //oSql.AppendLine("AND CONVERT(VARCHAR(10), HD.FDLastUpdOn, 121) >= '" + string.Format("{0:yyyy-MM-dd}", pdDate) + "'");
 
-                    if (odtTmp != null && odtTmp.Rows.Count > 0)
-                    {
-                        oSql.AppendLine("AND CHN.FTPmhDocNo NOT IN (" + String.Join(", ", odtTmp.AsEnumerable().Select(oRow => string.Format("'{0}'", oRow.Field<string>("FTPmhDocNo"))).ToArray()) + ")"); //*Arm 63-09-02 - เอาเอกสารที่ไม่เอาออก
-                    }
+                    //if (odtTmp != null && odtTmp.Rows.Count > 0)
+                    //{
+                    //    oSql.AppendLine("AND CHN.FTPmhDocNo NOT IN (" + String.Join(", ", odtTmp.AsEnumerable().Select(oRow => string.Format("'{0}'", oRow.Field<string>("FTPmhDocNo"))).ToArray()) + ")"); //*Arm 63-09-02 - เอาเอกสารที่ไม่เอาออก
+                    //}
+                    //+++++++++++++++
+
+                    //*Arm 65-09-19 [CR-Oversea]
+                    oSql.AppendLine("INNER JOIN  " + tTblPmtTmp + " HD with(nolock) ON CHN.FTPmhDocNo = HD.FTPmhDocNo ");
+                    //+++++++++++++++
+
                     oPdtPmtDwn.raPdtPmtHDChn = oDB.C_DATaSqlQuery<cmlResInfoPdtPmtHDChn>(oSql.ToString());
                     //++++++++++++++++++++++++++++++++++++++
+
+                    //*Arm 65-09-19 [CR-Oversea]
+                    oSql.Clear();
+                    oSql.AppendLine("SELECT DISTINCT HDZne.FTPmhDocNo AS rtPmhDocNo, HDZne.FTPmhStaType AS rtPmhStaType, HDZne.FTZneCode AS rtZneCode, HDZne.FTZneChain AS rtZneChain, HDZne.FTBchCode AS rtBchCode ");
+                    oSql.AppendLine("FROM TCNTPdtPmtHDZne HDZne WITH(NOLOCK) ");
+                    oSql.AppendLine("INNER JOIN  " + tTblPmtTmp + " HD with(nolock) ON HDZne.FTPmhDocNo = HD.FTPmhDocNo ");
+                    oPdtPmtDwn.raPdtPmtHDZne = oDB.C_DATaSqlQuery<cmlResInfoPdtPmtHDZne>(oSql.ToString());
+                    //++++++++++++++
                 }
                 else
                 {
@@ -573,6 +706,14 @@ namespace API2PSMaster.Controllers
             }
             finally
             {
+                //*Arm 65-09-19 [CR-Oversea]
+                oSql = new StringBuilder();
+                oSql.AppendLine("IF OBJECT_ID(N'" + tTblPmtTmp + "') IS NOT NULL BEGIN");
+                oSql.AppendLine("   DROP TABLE " + tTblPmtTmp);
+                oSql.AppendLine("END ");
+                new cDatabase().C_DATnExecuteSql(oSql.ToString());
+                //+++++++++++++
+
                 oFunc = null;
                 oCS = null;
                 oMsg = null;

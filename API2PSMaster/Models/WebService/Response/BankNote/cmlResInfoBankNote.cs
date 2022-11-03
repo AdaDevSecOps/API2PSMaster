@@ -16,5 +16,6 @@ namespace API2PSMaster.Models.WebService.Response.BankNote
         public Nullable<DateTime> rdCreateOn { get; set; }
         public string rtLastUpdBy { get; set; }
         public string rtCreateBy { get; set; }
+        public string rtAgnCode { get; set; } //*Arm 65-10-31
     }
 }

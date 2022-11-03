@@ -138,6 +138,7 @@ namespace API2PSMaster.Controllers
                 aoResult.raItems = new List<cmlResInfoVatRate>();
                 oSql = new StringBuilder();
                 oSql.AppendLine("SELECT FTVatCode AS rtVatCode, FDVatStart AS rdVatStart, FCVatRate AS rcVatRate,");
+                oSql.AppendLine("FTCtyCode AS rtCtyCode, "); //*Arm 65-09-20 [CR-Oversea]
                 oSql.AppendLine("FDLastUpdOn AS rdLastUpdOn, FDCreateOn AS rdCreateOn,");
                 oSql.AppendLine("FTLastUpdBy AS rtLastUpdBy, FTCreateBy AS rtCreateBy");
                 oSql.AppendLine("FROM TCNMVatRate with(nolock)");

@@ -388,6 +388,7 @@ namespace API2PSMaster.Class.Standard
             IHeaderDictionary oReqHeaders;
 
             string tKeyApi;
+            string tConfigAPIKey = ""; //*Arm 65-09-20
             int nConTme, nCmdTme;
 
             try
@@ -415,28 +416,50 @@ namespace API2PSMaster.Class.Standard
 
                     // ถ้าไม่มี key อยู่ใน cache
                     oSql = new StringBuilder();
-                    oSql.AppendLine("SELECT FTAgnKeyAPI");
-                    oSql.AppendLine("FROM TCNMAgency WITH(NOLOCK)");
-                    oSql.AppendLine("WHERE FTAgnKeyAPI = '" + tKeyApi + "'");
-                    oSql.AppendLine("AND FTAgnStaApv = '1'");
-                    oSql.AppendLine("AND FTAgnStaActive = '1'");
+                    //oSql.AppendLine("SELECT FTAgnKeyAPI");
+                    //oSql.AppendLine("FROM TCNMAgency WITH(NOLOCK)");
+                    //oSql.AppendLine("WHERE FTAgnKeyAPI = '" + tKeyApi + "'");
+                    //oSql.AppendLine("AND FTAgnStaApv = '1'");
+                    //oSql.AppendLine("AND FTAgnStaActive = '1'");
+
+                    //*Arm 65-09-20
+                    oSql.AppendLine("SELECT ISNULL(FTSysStaUsrValue,'') AS FTSysStaUsrValue ");
+                    oSql.AppendLine("FROM  TSysConfig WITH (NOLOCK) WHERE FTSysKey='POS' AND FTSysSeq='1' AND FTSysCode='tCN_AgnKeyAPI'");
+                    //+++++++++++++
 
                     SP_DATxGetConfigurationFromMem<int>(out nConTme, cCS.nCS_ConTme, paoSysConfig, "1");
                     SP_DATxGetConfigurationFromMem<int>(out nCmdTme, cCS.nCS_CmdTme, paoSysConfig, "2");
 
                     oDatabase = new cDatabase(nConTme, nCmdTme);
-                    //tKeyApi = oDatabase.C_DAToSqlQuery<string>(oSql.ToString());
-                    Guid oKeyApi = oDatabase.C_DAToSqlQuery<Guid>(oSql.ToString());
-                    tKeyApi = oKeyApi.ToString();
-                    if (string.IsNullOrEmpty(tKeyApi))
+                    //*Arm 65-09-20 - Comment Code
+                    ////tKeyApi = oDatabase.C_DAToSqlQuery<string>(oSql.ToString());
+                    //Guid oKeyApi = oDatabase.C_DAToSqlQuery<Guid>(oSql.ToString());
+                    //tKeyApi = oKeyApi.ToString();
+                    //++++++++++++++
+
+                    tConfigAPIKey = oDatabase.C_DAToSqlQuery<string>(oSql.ToString()); //*Arm 65-09-20
+
+                    //if (string.IsNullOrEmpty(tKeyApi)) //*Arm 65-09-20 - Comment Code
+                    if (string.IsNullOrEmpty(tConfigAPIKey))
                     {
                         // ไม่มีข้อมูล KeyApi ในฐานข้อมูล หรือไม่อนุญาตให้ใช้งาน
                         ptKeyApi = "";
                         return false;
                     }
+                    //*Arm 65-09-20
+                    else
+                    {
+                        if(tKeyApi != tConfigAPIKey)
+                        {
+                            ptKeyApi = "";
+                            return false;
+                        }
+                    }
+                    //+++++++++++++
 
                     // เก็บ KeyApi ลง Cache
-                    ptKeyApi = tKeyApi;
+                    //ptKeyApi = tKeyApi; //*Arm 65-09-20 - Comment Code
+                    ptKeyApi = tConfigAPIKey; //*Arm 65-09-20
                     oCacheFunc.C_CAHxAddKey(ptKeyApi, true);
                     return true;
                 }

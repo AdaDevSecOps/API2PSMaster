@@ -154,6 +154,7 @@ namespace API2PSMaster.Controllers
                 oSql = new StringBuilder();
                 oSql.AppendLine("SELECT FTBchCode AS rtBchCode, FTWahCode AS rtWahCode, FTWahStaType AS rtWahStaType, FTWahRefCode AS rtWahRefCode,");
                 oSql.AppendLine("FTWahStaChkStk AS rtWahStaChkStk, FTWahStaPrcStk AS rtWahStaPrcStk,");
+                oSql.AppendLine("FTWahStaAlwCntStk AS rtWahStaAlwCntStk, FTWahStaAlwCostAmt AS rtWahStaAlwCostAmt, FTWahStaAlwPLFrmTBO AS rtWahStaAlwPLFrmTBO, FTWahStaAlwPLFrmSale AS rtWahStaAlwPLFrmSale, FTWahStaAlwSNPL AS rtWahStaAlwSNPL,"); //*Arm 65-09-28 [CR-WMS]
                 oSql.AppendLine("FDLastUpdOn AS rdLastUpdOn, FDCreateOn AS rdCreateOn,");
                 oSql.AppendLine("FTLastUpdBy AS rtLastUpdBy, FTCreateBy AS rtCreateBy");
                 oSql.AppendLine("FROM TCNMWaHouse with(nolock)");

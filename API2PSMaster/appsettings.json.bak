@@ -1,0 +1,24 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    }
+  },
+  "AllowedHosts": "*",
+  "ConnectionStrings": {
+    "AdaAccEntities": "Data source=dev.ada-soft.com,33433;initial catalog=SKC_Fullloop2;user id=sa;password=GvFhk@61;MultipleActiveResultSets=True;"
+
+  },
+  "AppSettings": {
+    "tRQHost": "iKieyrQGTlTQTR/hBxVEvXZZr2AvCmUUTflZNAlAR0o=",
+    "tRQUsr": "8BP7tjqg/QpswrUHiwMomA==",
+    "tRQPwd": "8BP7tjqg/QpswrUHiwMomA==",
+    "tRQVirtual": "oklV+QiMfR0lAF3vadbETokcKP/zYuJ3jweT2t2s9lu6+S7ZjGvUqw==",
+    "tAccess": "3Wi16CeEjmTEV0XkuI8ddu2F4SyiOeK/nht7vUnDR2CY0pQuiqWtzlJzDY2m9ctCMFOVhYy74etdHTY+z8HKUaavmI+gfFyMCefZqkaVgdU=",
+    "tConnDB": "Data Source = dev.ada-soft.com,33433;Initial Catalog = SKC_Fullloop2;Persist Security Info = True;User ID = sa;Password = GvFhk@61;MultipleActiveResultSets=true;",
+    "rRedisIpAddress": "",
+    "nCmdTime": "300"
+  }
+}
