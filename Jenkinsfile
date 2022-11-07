@@ -41,16 +41,5 @@ pipeline
                 }
             }
         }
-        stage('Run Container')
-        {
-            steps
-            {
-                echo 'Run Container...'
-                script
-                {
-                    bat 'docker run -d --name api2psmaster api2psmaster:5.20002.3.01 '
-                }
-            }
-        }
     }
 }
