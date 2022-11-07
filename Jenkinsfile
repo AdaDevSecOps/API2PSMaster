@@ -52,5 +52,16 @@ pipeline
                 }
             }
         }
+        stage('Run Container')
+        {
+            steps
+            {
+                echo 'Run Container...'
+                script
+                {
+                    sh 'docker run -d --port 8090:8000 --name api2psmaster api2psmaster:5.20002.3.01'
+                }
+            }
+        }
     }
 }
