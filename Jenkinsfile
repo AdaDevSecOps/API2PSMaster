@@ -41,17 +41,6 @@ pipeline
                 }
             }
         }
-        stage('Remove Container')
-        {
-            steps
-            {
-                echo 'Remove Container...'
-                script
-                {
-                    bat 'docker rm -f api2psmaster '
-                }
-            }
-        }
         stage('Run Container')
         {
             steps
