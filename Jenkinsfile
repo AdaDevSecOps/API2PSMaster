@@ -48,7 +48,7 @@ pipeline
                 echo 'Remove Container...'
                 script
                 {
-                    bat 'docker rm -f api2psmaster '
+                    sh 'docker rm -f api2psmaster '
                 }
             }
         }
